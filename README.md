@@ -150,5 +150,3 @@ CinePulse demonstrates practical application of:
 ## 📜 License
 
 This project is intended for academic and educational use.
-
-```
