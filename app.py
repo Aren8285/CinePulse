@@ -10,24 +10,20 @@ from googleapiclient.discovery import build
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from langdetect import detect, LangDetectException
 
-# --- API CONFIGURATION ---
 TMDB_API_KEY = "3e875f59ed1a033b87727ba06a6bce73"
 YOUTUBE_API_KEY = "AIzaSyDP5mk0vrcoryR-18PV2nXvQPqDciXKocQ"
 
-# --- PALETTE CONFIGURATION ---
 COLOR_BG = "#000000"
 COLOR_ACCENT_PURPLE = "#9929EA"
 COLOR_ACCENT_PINK = "#FF5FCF"
 COLOR_ACCENT_YELLOW = "#FAEB92"
 COLOR_CARD_BG = "#121212"
 
-# Ensure VADER lexicon is downloaded
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
 except LookupError:
     nltk.download('vader_lexicon')
 
-# --- TEMPLATES & KEYWORDS ---
 KEYWORD_MAP = {
     "visuals": ["cgi", "vfx", "visuals", "cinematography", "look", "beautiful"],
     "acting": ["acting", "performance", "cast", "actor", "actress", "role", "villain"],
@@ -55,10 +51,7 @@ VERDICT_TEMPLATES = {
     ]
 }
 
-# --- FUNCTIONS ---
-
 def is_valid_comment(text):
-    """Aggressive filter for high-quality opinions."""
     if re.search(r'\d{1,2}:\d{2}', text): return False 
     if len(text) < 20: return False 
     if len(text) > 400: return False 
@@ -81,7 +74,6 @@ def analyze_consensus(comments, avg_score):
     
     for category, keywords in KEYWORD_MAP.items():
         if any(k in text_blob for k in keywords):
-            # FIX 4: Adjusted thresholds to stop mislabeling
             if avg_score > 0.1: 
                 found_pros.append(category)
             elif avg_score < -0.1: 
@@ -103,7 +95,6 @@ def analyze_consensus(comments, avg_score):
     return template.format(pro=pro, con=con)
 
 def get_vibe_text(score):
-    # FIX 3: Adjusted vibe thresholds
     if score >= 0.5: return "Universal Acclaim", COLOR_ACCENT_YELLOW
     elif score >= 0.35: return "Hype is Real", COLOR_ACCENT_PINK
     elif score >= 0.15: return "Generally Positive", COLOR_ACCENT_PURPLE
@@ -159,11 +150,9 @@ def fetch_poster_wiki(title):
     return None
 
 def get_youtube_data(movie_title, rating_val):
-    # --- DYNAMIC TRUST ALGORITHM ---
     try: rating_val = float(rating_val)
     except: rating_val = 6.0
     
-    # FIX 1: Make TMDB anchor less aggressive
     tmdb_sentiment = (rating_val - 6.0) / 2.5
     tmdb_sentiment = max(min(tmdb_sentiment, 1.0), -1.0)
 
@@ -198,19 +187,14 @@ def get_youtube_data(movie_title, rating_val):
             
         avg_yt_score = sum(scores) / len(scores)
 
-        # FIX 2: Clamp YouTube Negativity for High-Rated Movies
         if rating_val >= 8.0:
             avg_yt_score = max(avg_yt_score, -0.05)
         
-        # --- THE FIX: DYNAMIC WEIGHTING ---
         if rating_val >= 7.5:
-            # Trusted Classic: 80% Rating, 20% YouTube (Ignores "dark" false negatives)
             final_vibe_score = (0.8 * tmdb_sentiment) + (0.2 * avg_yt_score)
         elif rating_val <= 6.0:
-            # Bad Movie: 80% Rating, 20% YouTube (Ignores nostalgic false positives)
             final_vibe_score = (0.8 * tmdb_sentiment) + (0.2 * avg_yt_score)
         else:
-            # Mid-Tier: 50/50 Split (Let the hype decide)
             final_vibe_score = (0.5 * tmdb_sentiment) + (0.5 * avg_yt_score)
         
         vibe_text, vibe_color = get_vibe_text(final_vibe_score)
@@ -279,7 +263,6 @@ def recommend(selected_movie_title):
     candidates = sorted(candidates, key=lambda x: x['relevance'], reverse=True)[:5]
     return candidates
 
-# --- UI SETUP ---
 st.set_page_config(page_title="CinePulse", layout="wide", page_icon="🎬")
 
 st.markdown(f"""
@@ -372,7 +355,6 @@ except:
     st.error("Data missing. Run generate_model.py")
     st.stop()
 
-# --- HEADER SECTION ---
 st.title("CINEPULSE")
 st.markdown(f"<div class='sub-header'>An Intelligent Approach to Personalized Movie Recommendations</div>", unsafe_allow_html=True)
 

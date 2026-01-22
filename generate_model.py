@@ -13,14 +13,11 @@ def create_model():
         print("Error: Files not found in 'data/' folder. Please download them from Kaggle.")
         return
 
-    # Merge datasets
     movies = movies.merge(credits, on='title')
     
-    # Select critical columns
     movies = movies[['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
     movies.dropna(inplace=True)
 
-    # --- HELPER FUNCTIONS ---
     def convert(obj):
         L = []
         for i in ast.literal_eval(obj):
@@ -47,23 +44,19 @@ def create_model():
         return L
 
     print("Step 2/5: Processing tags (this might take a moment)...")
-    # Extract details from JSON format
     movies['genres'] = movies['genres'].apply(convert)
     movies['keywords'] = movies['keywords'].apply(convert)
     movies['cast'] = movies['cast'].apply(convert3)
     movies['crew'] = movies['crew'].apply(fetch_director)
     movies['overview'] = movies['overview'].apply(lambda x: x.split())
 
-    # Collapse spaces to create unique tags (e.g., "Science Fiction" -> "ScienceFiction")
     movies['genres'] = movies['genres'].apply(lambda x: [i.replace(" ", "") for i in x])
     movies['keywords'] = movies['keywords'].apply(lambda x: [i.replace(" ", "") for i in x])
     movies['cast'] = movies['cast'].apply(lambda x: [i.replace(" ", "") for i in x])
     movies['crew'] = movies['crew'].apply(lambda x: [i.replace(" ", "") for i in x])
 
-    # Create the Master Tag
     movies['tags'] = movies['overview'] + movies['genres'] + movies['keywords'] + movies['cast'] + movies['crew']
     
-    # Create clean dataframe
     new_df = movies[['movie_id', 'title', 'tags']]
     new_df['tags'] = new_df['tags'].apply(lambda x: " ".join(x).lower())
 
