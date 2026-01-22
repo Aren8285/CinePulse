@@ -10,8 +10,12 @@ from googleapiclient.discovery import build
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from langdetect import detect, LangDetectException
 
-TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
-YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]
+try:
+    TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
+    YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]
+except KeyError:
+    st.error("API keys not set in secrets. Please configure them in Streamlit Cloud settings.")
+    st.stop()
 
 COLOR_BG = "#000000"
 COLOR_ACCENT_PURPLE = "#9929EA"
