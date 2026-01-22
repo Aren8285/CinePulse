@@ -10,8 +10,8 @@ from googleapiclient.discovery import build
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from langdetect import detect, LangDetectException
 
-TMDB_API_KEY = "3e875f59ed1a033b87727ba06a6bce73"
-YOUTUBE_API_KEY = "AIzaSyDP5mk0vrcoryR-18PV2nXvQPqDciXKocQ"
+TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
+YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]
 
 COLOR_BG = "#000000"
 COLOR_ACCENT_PURPLE = "#9929EA"
