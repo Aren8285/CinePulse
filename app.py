@@ -365,7 +365,7 @@ st.markdown(f"<div class='sub-header'>An Intelligent Approach to Personalized Mo
 selected_movie = st.selectbox("", movies['title'].values)
 
 if st.button('Get Recommendations'):
-    with st.spinner('Compiling Viewer Verdicts...'):
+    try:
         recommendations = recommend(selected_movie)
         
         if not recommendations:
@@ -412,3 +412,5 @@ if st.button('Get Recommendations'):
                     with st.expander("VIEWER VERDICT"):
                         st.markdown(f"<div class='summary-label'>THE GIST</div><div class='summary-text'>{short_plot}</div>", unsafe_allow_html=True)
                         st.markdown(f"<div class='summary-label'>WHAT VIEWERS THINK</div><div class='summary-text'>{consensus_summary}</div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
