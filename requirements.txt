@@ -1,0 +1,9 @@
+streamlit
+pandas
+scikit-learn
+nltk
+google-api-python-client
+requests
+
+TMDB_API_KEY = "3e875f59ed1a033b87727ba06a6bce73"
+YOUTUBE_API_KEY = "AIzaSyDP5mk0vrcoryR-18PV2nXvQPqDciXKocQ"
